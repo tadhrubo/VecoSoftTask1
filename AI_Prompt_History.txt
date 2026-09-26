@@ -1,0 +1,48 @@
+Act as a Senior Frontend Engineer. We are building Task 1 of a frontend technical assessment: a modern, responsive mobile-first Order Tracking Screen using Next.js (App Router), Tailwind CSS, and Lucide React icons.
+
+Primary Objective:
+Design a clean, premium, production-ready order tracking screen optimized for 360–430px mobile viewports that expands seamlessly into an intelligent desktop layout. Do not overcomplicate it with excessive dashboard cards or heavy 3D visuals; keep it restrained, clear, and data-driven.
+
+Requirements & Edge Cases to Support:
+The UI must be entirely data-driven, allowing the viewer to inspect 4 states:
+1. Standard State: Successful delivery progress (Ordered -> Confirmed -> Shipped -> Out for Delivery -> Delivered).
+2. Delayed Order: ETA has passed or delivery is delayed. Prominently display an alert/status message, updated ETA, and clear next steps (e.g., Track Updates / Contact Support).
+3. Delivered but Not Received: System marks it as delivered, but the user hasn't received it. Provide specific guidance (e.g., check surroundings/neighbors) and a direct report/support action.
+4. Tracking Not Available Yet: Order exists and is confirmed, but tracking info is pending from the carrier. Display an intentional, non-broken placeholder state with estimated window and support options.
+
+Component & Layout Architecture:
+- Root Layout / Page: Mobile-first container (`max-w-md mx-auto min-h-screen p-4 md:max-w-4xl md:grid md:grid-cols-2 md:gap-8`).
+- Header: Order number, estimated delivery date/time, and clear delivery status pill/badge.
+- Delivery Timeline (Hero): Clean visual vertical stepper showing current progress, dates/timestamps, and clear active/completed/pending step indicators.
+- Order & Item Summary: Compact product details (item name, thumbnail placeholder, pricing, quantity).
+- Dynamic Action / Support Card: Context-sensitive actions based on the active state (Contact Support, Report Missing Package, etc.).
+- Evaluator Bar: A fixed, discreet bottom toolbar for demonstration purposes allowing quick switching between the 4 states: ['STANDARD', 'DELAYED', 'NOT_RECEIVED', 'PENDING'].
+
+Deliverables:
+1. Provide a TypeScript mock data structure (`types/order.ts` and `data/mockOrders.ts`) representing all 4 states.
+2. Provide the complete code for the main page and components with clean Tailwind styling and Lucide icons.
+3. Keep code modular, clean, and self-contained with no external backend calls needed.
+
+
+
+Please run the following command in the terminal to install the anti-slop plugin for Antigravity:
+`agy plugin install https://github.com/miqdadbadjuber/anti-slop`
+
+Once the installation is complete, activate the `antislop-ui` skill for this session. 
+
+With the anti-slop UI rules now active, refactor the current Order Tracking screen to completely eliminate generic "AI dashboard" styling. Follow these strict directives:
+
+1. Layout Structure: 
+- Abandon the uniform floating-card grid layout. 
+- Use a cohesive, asymmetric 2-column editorial layout: Left column dedicated entirely to the primary user intent (The Hero Timeline & Status), right column housing compact metadata.
+
+2. Surfaces & Borders:
+- Eliminate multi-layered rounded glass cards with identical soft shadows.
+- Use a flat, unified canvas background with crisp, razor-sharp 1px structural borders and restrained corner radiuses (`rounded-md` or `rounded-lg`). No glowing badges.
+
+3. Typography & Hierarchy:
+- Use strict typographic contrast. For all codes, tracking numbers, and timestamps, use monospace typography (`font-mono`) with tight tracking.
+- Left-align all headers with strong weight contrasts.
+
+4. Timeline Design:
+- Transform the timeline into a clean, precise vertical ledger rather than bubbly cartoon step pills. Use thin, sharp indicator lines with high-contrast state markers.
