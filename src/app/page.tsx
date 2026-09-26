@@ -1,69 +1,134 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState } from 'react';
+import { mockOrders } from '@/data/mockOrders';
+import { OrderState } from '@/types/order';
+import { OrderHeader } from '@/components/OrderHeader';
+import { OrderAlertBanner } from '@/components/OrderAlertBanner';
+import { DeliveryTimeline } from '@/components/DeliveryTimeline';
+import { OrderItemsSummary } from '@/components/OrderItemsSummary';
+import { DynamicActionCard } from '@/components/DynamicActionCard';
+import { EvaluatorBar } from '@/components/EvaluatorBar';
+import { ActionModal } from '@/components/ActionModal';
+import { ArrowLeft, ShieldCheck, RefreshCw } from 'lucide-react';
+
+export default function OrderTrackingPage() {
+  const [activeState, setActiveState] = useState<OrderState>('STANDARD');
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    actionKey: string;
+    actionTitle: string;
+  }>({
+    isOpen: false,
+    actionKey: '',
+    actionTitle: '',
+  });
+
+  const currentOrder = mockOrders[activeState];
+
+  const handleTriggerAction = (actionKey: string, label: string) => {
+    setModalState({
+      isOpen: true,
+      actionKey,
+      actionTitle: label,
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalState((prev) => ({ ...prev, isOpen: false }));
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-[#FAFAFA] text-zinc-950 flex flex-col justify-between selection:bg-zinc-200">
+      {/* Top Application Masthead: Pure light mode */}
+      <header className="border-b border-zinc-200 bg-white sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => alert('Return to orders overview')}
+              className="p-1 -ml-1 text-zinc-500 hover:text-zinc-950 transition-colors cursor-pointer"
+              aria-label="Back to order history"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-xs tracking-wider uppercase font-black text-zinc-950">
+                AURA LOGISTICS
+              </span>
+              <span className="text-zinc-300 hidden sm:inline">•</span>
+              <span className="font-mono text-[11px] text-zinc-500 tracking-wider hidden sm:inline uppercase">
+                Shipment Custody Ledger
+              </span>
+            </div>
+          </div>
+
+          <div className="font-mono text-[11px] tracking-wider text-zinc-500 uppercase">
+            SYSTEM STATUS: <span className="font-bold text-zinc-950">OPERATIONAL</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+      </header>
+
+      {/* Main Content: Flattened Swiss Industrial Print Grid */}
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 pb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-start">
+          {/* Left Column: Primary User Intent (Order Reference, Hero ETA, Alert & Transit Ledger) */}
+          <div className="lg:col-span-7 lg:pr-10 space-y-6">
+            {/* Header: Reference, Status, Hero ETA, Carrier */}
+            <OrderHeader order={currentOrder} />
+
+            {/* Contextual Alert Banner: Stark single-sided border, transparent background */}
+            {currentOrder.alert && (
+              <OrderAlertBanner
+                alert={currentOrder.alert}
+                onActionClick={(actionKey) =>
+                  handleTriggerAction(
+                    actionKey,
+                    currentOrder.alert?.actionLabel || 'Action Required'
+                  )
+                }
+              />
+            )}
+
+            {/* The Hero Timeline Ledger */}
+            <DeliveryTimeline
+              steps={currentOrder.timeline}
+              currentOrderState={currentOrder.state}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+
+          {/* Right Column: Compact Supporting Metadata & Resolution */}
+          <div className="lg:col-span-5 lg:pl-10 lg:border-l lg:border-zinc-200 pt-8 lg:pt-0 border-t lg:border-t-0 border-zinc-200">
+            {/* Context-Driven Action Resolution Box */}
+            <DynamicActionCard
+              config={currentOrder.supportCard}
+              onTriggerAction={handleTriggerAction}
+            />
+
+            {/* Itemized Manifest & Financial Settlement */}
+            <OrderItemsSummary
+              items={currentOrder.items}
+              pricing={currentOrder.pricing}
+              shippingAddress={currentOrder.shippingAddress}
+            />
+          </div>
         </div>
       </main>
+
+      {/* Evaluator State Switcher Toolbar */}
+      <EvaluatorBar
+        currentState={activeState}
+        onSelectState={(state) => setActiveState(state)}
+      />
+
+      {/* Interactive Action Dialog */}
+      <ActionModal
+        isOpen={modalState.isOpen}
+        onClose={handleCloseModal}
+        actionKey={modalState.actionKey}
+        actionTitle={modalState.actionTitle}
+        order={currentOrder}
+      />
     </div>
   );
 }
+
